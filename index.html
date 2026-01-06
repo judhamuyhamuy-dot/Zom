@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>متجر فيسبوك</title>
+<title>متجر احترافي</title>
 
 <style>
 :root{
@@ -19,7 +19,7 @@ body.night{
 
 body{
     margin:0;
-    font-family:Arial,sans-serif;
+    font-family:Arial, sans-serif;
     background:var(--bg);
     color:var(--text);
     transition:.4s;
@@ -50,7 +50,7 @@ button{
 .card{
     background:var(--card);
     padding:15px;
-    border-radius:12px;
+    border-radius:14px;
     margin-top:15px;
 }
 
@@ -59,6 +59,7 @@ button{
     justify-content:space-between;
     align-items:center;
     flex-wrap:wrap;
+    gap:10px;
 }
 
 .products{
@@ -70,7 +71,7 @@ button{
 
 .product{
     background:var(--card);
-    border-radius:15px;
+    border-radius:16px;
     overflow:hidden;
 }
 
@@ -81,12 +82,12 @@ button{
 }
 
 .product .info{
-    padding:10px;
+    padding:12px;
 }
 
 .price{
     font-weight:bold;
-    margin-top:5px;
+    margin-top:6px;
 }
 </style>
 </head>
@@ -119,9 +120,9 @@ button{
         <button onclick="toggleProductForm()">➕ إضافة منتج</button>
     </div>
 
-    <!-- إضافة منتج -->
+    <!-- نموذج إضافة منتج -->
     <div id="productForm" class="card hidden">
-        <input id="imgUrl" placeholder="رابط صورة من فيسبوك فقط">
+        <input type="file" id="imgFile" accept="image/*">
         <textarea id="desc" placeholder="وصف المنتج"></textarea>
         <input id="colors" placeholder="عدد الألوان">
         <input id="qty" placeholder="عدد القطع">
@@ -129,7 +130,7 @@ button{
         <button onclick="addProduct()">إضافة المنتج</button>
     </div>
 
-    <!-- المنتجات -->
+    <!-- عرض المنتجات -->
     <div class="products" id="products"></div>
 </div>
 
@@ -173,32 +174,29 @@ function toggleProductForm(){
     productForm.classList.toggle("hidden");
 }
 
-/* ✅ قبول صور فيسبوك فقط */
-function isFacebookImage(url){
-    return url.includes("fbcdn.net") &&
-    (url.endsWith(".jpg") || url.endsWith(".png") || url.endsWith(".webp"));
-}
-
 function addProduct(){
-    const url = imgUrl.value.trim();
-
-    if(!isFacebookImage(url)){
-        alert("❌ يسمح فقط بروابط صور فيسبوك المباشرة");
+    const file = imgFile.files[0];
+    if(!file){
+        alert("❌ الرجاء اختيار صورة");
         return;
     }
 
-    products.innerHTML += `
-    <div class="product">
-        <img src="${url}">
-        <div class="info">
-            <div>${desc.value}</div>
-            <div>🎨 الألوان: ${colors.value}</div>
-            <div>📦 الكمية: ${qty.value}</div>
-            <div class="price">💰 ${price.value}</div>
-        </div>
-    </div>`;
+    const reader = new FileReader();
+    reader.onload = function(e){
+        products.innerHTML += `
+        <div class="product">
+            <img src="${e.target.result}">
+            <div class="info">
+                <div>${desc.value}</div>
+                <div>🎨 الألوان: ${colors.value}</div>
+                <div>📦 الكمية: ${qty.value}</div>
+                <div class="price">💰 ${price.value}</div>
+            </div>
+        </div>`;
+    };
+    reader.readAsDataURL(file);
 
-    imgUrl.value = desc.value = colors.value = qty.value = price.value = "";
+    imgFile.value = desc.value = colors.value = qty.value = price.value = "";
     productForm.classList.add("hidden");
 }
 </script>
